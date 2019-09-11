@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
 	}
 })
 
-router.get('/users', async (req, res) => {
+router.get('/users', topSecret, async (req, res) => {
 	try {
 		const users = await AuthDB.find();
 		res.status(200).json(users)
@@ -62,6 +62,23 @@ function generateToken(user) {
 	}
 
 	return jwt.sign(payload, process.env.JWT_SECRET, options)
+}
+
+function topSecret(req, res, next) {
+	const token = req.headers.authorization;
+
+	if(token) {
+		jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+			if(err) {
+				res.status(401).json({ message: "YOU SHALL NOT PASS!"})
+			} else {
+				req.decodedToken = decodedToken;
+				next();
+			}
+		})
+	} else {
+		return res.status(400).json({ message: "I dont see a token here. Do you?" })
+	}
 }
 
 module.exports = router;

@@ -8,13 +8,13 @@ module.exports = {
 };
 
 function add(user) {
-	db('users').insert(user).then(ids => {
+	return db('users').insert(user).then(ids => {
 		return findById(ids[0])
 	})
 };
 
 function find() {
-	return db('users').select('username', 'role', 'id')
+	return db('users').select('username', 'department', 'id')
 };
 
 function findBy(something) {

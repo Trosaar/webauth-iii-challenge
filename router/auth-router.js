@@ -14,12 +14,16 @@ router.post('/register', async (req, res) => {
 
 	try {
 		const newUser = await AuthDB.add(user)
-		const token = await generateToken(newUser)
+		console.log(newUser);
+		
+		const token = generateToken(newUser)
 		res.status(201).json({
 			user: newUser,
 			token
 		})
 	} catch(err) {
+		console.log(err);
+		
 		res.status(500).json({ message: "failed to create user" })
 	}
 })
@@ -31,7 +35,7 @@ router.post('/login', async (req, res) => {
 		const userInfo = await AuthDB.findBy({ username }).first();
 
 		if(userInfo && bcrypt.compareSync(password, userInfo.password)) {
-			const token = await generateToken(userInfo);
+			const token = generateToken(userInfo);
 			res.status(200).json({ 
 				message: `Hello ${userInfo.username}`,
 				token
@@ -47,6 +51,8 @@ router.get('/users', topSecret, async (req, res) => {
 		const users = await AuthDB.find();
 		res.status(200).json(users)
 	} catch(err) {
+		console.log(err);
+		
 		res.status(500).json({ message: "there has been an error, oh no!" })
 	}
 })
